@@ -25,6 +25,14 @@
     return ev;
   };
   
+  CarouselService.prototype.normalizeOptions = function(attr, defaultOptions){
+    var options = {};
+    for(var op in defaultOptions){
+      options[op] = attr[op] || defaultOptions[op];
+    }
+    return options;
+  };
+  
   // taken from angular material: https://github.com/angular/material/blob/67e50f6e51b3e0282c086d9bb7760661c8135bbf/src/core/core.js
   CarouselService.prototype.invokeOncePerFrame = function(cb) {
     var queuedArgs, alreadyQueued, queueCb, context, self;

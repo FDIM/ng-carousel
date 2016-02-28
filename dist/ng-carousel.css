@@ -7,3 +7,31 @@
   user-select: none;           /* non-prefixed version, currently
                                   not supported by any browser */
 }
+.ng-carousel {
+  overflow: hidden;
+  transform: translateZ(0);
+  position: relative;
+}
+.ng-carousel.ng-carousel-active >ul {
+  transition: none;
+}
+.ng-carousel >ul {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  white-space: nowrap;
+  transform: translateX(0%);
+  -webkit-transition: transform ease 0.3s;
+  transition: transform ease 0.3s;
+}
+
+.ng-carousel >ul >li {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}

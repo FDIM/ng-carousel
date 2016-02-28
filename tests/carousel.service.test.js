@@ -46,5 +46,15 @@ describe('carousel service', function () {
     expect(ev.originalEvent.clientX).toEqual(12);
     expect(ev.originalEvent.clientY).toEqual(12);
   });
+  
+  it("normalizeOptions should work", function(){
+    var attr = {rawValue:"123"};
+    var defaultOptions = {rawValue:"1234", useDefault:"1234567890"};
+    var result = service.normalizeOptions(attr, defaultOptions);
+    
+    expect(result.rawValue).toEqual("123");
+    expect(result.useDefault).toEqual("1234567890");
+    
+  });
 
 });

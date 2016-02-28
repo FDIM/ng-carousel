@@ -3,9 +3,9 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <link rel="stylesheet" type="text/css" href="../dist/ng-pull.css"/>
+  <link rel="stylesheet" type="text/css" href="../dist/ng-carousel.css"/>
   <link rel="stylesheet" type="text/css" href="style.css"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.js" type="text/javascript"></script>
   <script src="../dist/ng-carousel.js" type="text/javascript"></script>
   <script src="app.js" type="text/javascript"></script>
 </head>
@@ -16,9 +16,29 @@
     <p>Swipe/pull left or right to change the slides</p>
   </header>
   <div ng-controller="AppController">
-    <div class="container">
-      
+    <div class="container" carousel carousel-wrap-around="true">
+      <ul>
+        <li>slide 1</li>
+        <li>slide 2</li>
+        <li>slide 3</li>
+      </ul>
     </div>
+    <span>{{$carousel.index}}</span>
+    <button ng-click="$carousel.next($event)">next</button>
+    <button ng-click="$carousel.previous($event)">previous</button>
+    <div class="container" carousel="secondaryCarousel" carousel-index="2">
+      <ul>
+        <li ng-class="{active:secondaryCarousel.index===$index}" ng-repeat="item in items">{{item.title}}</li>
+      </ul>
+    </div>
+    <span>{{secondaryCarousel.index}}</span>
+    <button ng-click="secondaryCarousel.next($event)">next</button>
+    <button ng-click="secondaryCarousel.previous($event)">previous</button>
+    
+    <button ng-click="addNewAt(0)">add new item at the start</button>
+    <button ng-click="addNewAt(items.length)">add new item at the end</button>
+    <button ng-click="removeItem(items[items.length-1])">remove last item</button>
+    
   </div>
 </body>
 

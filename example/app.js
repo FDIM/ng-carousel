@@ -7,18 +7,26 @@
  */
 (function (app) {
   app.controller("AppController", ['$scope', '$rootScope', '$timeout', function ($scope, $rootScope, $timeout) {
+      var counter = 0;
       $scope.items = [];
       $scope.history = [];
       $scope.loadingMore = false;
-
-      for(var i =0; i< 100; i++){
-        $scope.items.push({title:"item "+i, intro:i % 5 ===0 && i>0?'You can\'t pull me (disabled)':'intro '+i, disabled: i % 5 ===0  && i>0 });
+      
+      $scope.addNewAt = function(index) {
+        var i = ++counter;
+        var item = {title:"item "+i, intro:i % 5 ===0 && i>0?'You can\'t pull me (disabled)':'intro '+i, disabled: i % 5 ===0  && i>0 };
+        if(index === 0 ){
+          $scope.items.unshift(item);
+        }else{
+          $scope.items.push(item); 
+        }
+        
       }
-
-      $scope.loadNewItems = function() {
-        $scope.history.push("load new items");
+      
+      for(var i =0; i< 5; i++){
+        $scope.addNewAt(i);
       }
-
+    
       $scope.loadMoreItems = function(cancel) {
         $scope.history.push("loading more items");
         $scope.loadingMore = true;
@@ -33,7 +41,7 @@
         }, 2000);
         return false;
       }
-
+      
       $scope.removeItem = function(item) {
         $scope.items.splice($scope.items.indexOf(item),1);
         $scope.history.push("removed "+item.title);
@@ -46,4 +54,4 @@
   }]);
 
   // The name of the module, followed by its dependencies (at the bottom to facilitate enclosure)
-}(angular.module("app", ['ngPull'])));
+}(angular.module("app", ['ngCarousel'])));
