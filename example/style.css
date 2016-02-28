@@ -1,0 +1,102 @@
+.container {
+  height: 500px;
+  border: 2px solid #C7C7C7;
+  width:300px;
+  overflow-y: scroll; /* has to be scroll, not auto */
+  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+  margin-right: 10px;
+  float: left;
+}
+.container ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.container li {
+    height: 52px;
+    padding: 4px;
+    border-top:1px solid #E8E8E8;
+    position: relative;
+    background: #fff;
+}
+.container li .pull-target{
+  border-left:1px solid #2B8CFF;
+  border-right:1px solid #2B8CFF;
+
+}
+.container li:first-child{
+  border-top: 0;
+}
+.container li .image {
+  float: left;
+  width: 48px;
+  height: 48px;
+  background: #ccc;
+  margin-right: 8px;
+}
+.container li .content{
+  padding: 4px;
+  height: 40px;
+}
+.container button{
+  display: inline-block;
+  padding: 8px;
+  position: relative;
+  top: -12px;
+}
+.container li h3 {
+  font-weight: 100;
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+}
+.container li p {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+.pull-to-refresh-indicator >div{
+  text-align: center;
+}
+header .help{
+  display: none;
+}
+@media screen and (max-width:640px){
+  body{
+    padding: 0;
+    margin: 0;
+  }
+  header {
+    height:48px;
+  }
+  header .help{
+    display: block;
+    float:right;
+    background: #fff;
+    color:#888;
+    padding: 6px;
+    border-radius: 4px;
+    margin-top: -6px;
+  }
+  header h2{
+    margin: 0;
+    padding: 13px 4px;
+    font-weight: normal;
+    background: #4CAF50;
+    color: #fff;
+    font-size: 18px;
+  }
+  header>p {
+    display: none;
+  }
+  .items-list {
+    width: 100%;
+    border:0;
+    height: calc(100vh - 48px);
+
+  }
+  .history-list{
+    display: none;
+  }
+}
