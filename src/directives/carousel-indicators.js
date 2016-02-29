@@ -7,25 +7,22 @@
  */
 (function (module) {
   var CONTAINER_CLASS = 'ng-carousel-indicators';
-    
+
   module.directive('carouselIndicators', ['ngCarouselService', '$window', '$document', CarouselIndicatorsDirective]);
-  
-  
-  
+
   function CarouselIndicatorsDirective(carouselService, $window, $document){
     return {
       require:'^carousel',
-      link: link
-      
+      link: link,
+      scope:{},
+      template:'<a ng-repeat="i in $carousel.items" ng-class="{active:$carousel.index==$index}" ng-click="$carousel.index=$index">&nbsp;</a>'
     };
-    
+
     function link($scope, element, attr, carouselCtrl){
-      $scope.$watch(carouselCtrl.options.model+'.length', function(){
-        //ctrl.init($scope.$eval(model));
-      });
-      
+      element.addClass(CONTAINER_CLASS);
+      $scope.$carousel = carouselCtrl;
     }
   }
-  
+
   // The name of the module, followed by its dependencies (at the bottom to facilitate enclosure)
 }(angular.module("ngCarousel")));

@@ -18,6 +18,9 @@
 .container.blurred li.active{
   -webkit-filter:blur(0px);
 }
+.container.blurred .ng-carousel-indicators{
+  text-align: right;
+}
 header .help{
   display: none;
 }

@@ -62,8 +62,6 @@
         if (model.$index >= model.items.length) {
           model.$index = model.options.carouselWrapAround ? 0 : model.items.length - 1;
         }
-      } else {
-        model.$index = 0;
       }
 
       if (model.$index < 0) {
@@ -91,9 +89,12 @@
       function link($scope, element, attr, ctrl){
         element.addClass(CONTAINER_CLASS);
         ctrl.options = carouselService.normalizeOptions(attr, defaultOptions);
-        ctrl.index = ctrl.options.carouselIndex || 0;
+        ctrl.$index = parseInt(ctrl.options.carouselIndex) || 0;
+        if(typeof ctrl.options.carouselWrapAround ==='string'){
+          ctrl.options.carouselWrapAround = ctrl.options.carouselWrapAround!=='false';
+        }
         // disable transition effect if initial
-        if(ctrl.index > 0){
+        if(ctrl.$index > 0){
           disableInitialTransition();
         }
         // if carousel is dynamic, e.g. has ng-repeat, watch it

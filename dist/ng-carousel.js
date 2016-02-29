@@ -73,26 +73,23 @@
  */
 (function (module) {
   var CONTAINER_CLASS = 'ng-carousel-indicators';
-    
+
   module.directive('carouselIndicators', ['ngCarouselService', '$window', '$document', CarouselIndicatorsDirective]);
-  
-  
-  
+
   function CarouselIndicatorsDirective(carouselService, $window, $document){
     return {
       require:'^carousel',
-      link: link
-      
+      link: link,
+      scope:{},
+      template:'<a ng-repeat="i in $carousel.items" ng-class="{active:$carousel.index==$index}" ng-click="$carousel.index=$index">&nbsp;</a>'
     };
-    
+
     function link($scope, element, attr, carouselCtrl){
-      $scope.$watch(carouselCtrl.options.model+'.length', function(){
-        //ctrl.init($scope.$eval(model));
-      });
-      
+      element.addClass(CONTAINER_CLASS);
+      $scope.$carousel = carouselCtrl;
     }
   }
-  
+
   // The name of the module, followed by its dependencies (at the bottom to facilitate enclosure)
 }(angular.module("ngCarousel")));
 
@@ -160,8 +157,6 @@
         if (model.$index >= model.items.length) {
           model.$index = model.options.carouselWrapAround ? 0 : model.items.length - 1;
         }
-      } else {
-        model.$index = 0;
       }
 
       if (model.$index < 0) {
@@ -189,9 +184,12 @@
       function link($scope, element, attr, ctrl){
         element.addClass(CONTAINER_CLASS);
         ctrl.options = carouselService.normalizeOptions(attr, defaultOptions);
-        ctrl.index = ctrl.options.carouselIndex || 0;
+        ctrl.$index = parseInt(ctrl.options.carouselIndex) || 0;
+        if(typeof ctrl.options.carouselWrapAround ==='string'){
+          ctrl.options.carouselWrapAround = ctrl.options.carouselWrapAround!=='false';
+        }
         // disable transition effect if initial
-        if(ctrl.index > 0){
+        if(ctrl.$index > 0){
           disableInitialTransition();
         }
         // if carousel is dynamic, e.g. has ng-repeat, watch it
