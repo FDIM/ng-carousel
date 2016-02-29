@@ -7,7 +7,6 @@
  */
 describe('carousel', function () {
   beforeEach(module("ngCarousel"));
-
   var $compile,
     $rootScope,
     $window,
@@ -222,5 +221,64 @@ describe('carousel', function () {
       expect(angular.element(element[0].querySelector('.ng-carousel ul li:nth-child(1)')).hasClass('active')).toBe(true);
       expect(angular.element(element[0].querySelector('.ng-carousel-indicators a:nth-child(1)')).hasClass('active')).toBe(true);
     });
+  });
+  describe("swipe", function() {
+    it("should init successfully with swipe enabled", function(){
+      var template = '<div carousel carousel-swipe-gesture="true"><ul><li ng-class="{active:$carousel.index===0}">slide 1</li><li ng-class="{active:$carousel.index===1}">slide 2</li></ul></div>';
+      var element = $compile(template)($rootScope);
+      $rootScope.$digest();
+      expect(angular.element(element[0].querySelector('.active')).text()).toEqual("slide 1");
+      expect($rootScope.$carousel.options.carouselSwipeGesture).toBeTruthy();
+    });
+    it("should init successfully with swipe disabled", function(){
+      var template = '<div carousel carousel-swipe-gesture="false"><ul><li ng-class="{active:$carousel.index===0}">slide 1</li><li ng-class="{active:$carousel.index===1}">slide 2</li></ul></div>';
+      var element = $compile(template)($rootScope);
+      $rootScope.$digest();
+      expect(angular.element(element[0].querySelector('.active')).text()).toEqual("slide 1");
+      expect($rootScope.$carousel.options.carouselSwipeGesture).not.toBeTruthy();
+    });
+    it("should init successfully and react to swipe left", function(){
+      var template = '<div carousel carousel-index="1" style="width:200px; height:200px;" ><ul><li ng-class="{active:$carousel.index===0}">slide 1</li><li ng-class="{active:$carousel.index===1}">slide 2</li><li ng-class="{active:$carousel.index===2}">slide 3</li></ul></div>';
+      var element = $compile(template)($rootScope);
+      var target = angular.element($window);
+      $rootScope.$digest();
+
+      element[0].dispatchEvent(new MouseEvent("mousedown",{clientX:100, clientY:20, button:0}));
+      expect($rootScope.$carousel.suspended).toEqual(true);
+
+      target[0].dispatchEvent(new MouseEvent("mousemove",{clientX:80, clientY:20, button:0}));
+      carouselService.$$rAF.flush();
+      target[0].dispatchEvent(new MouseEvent("mousemove",{clientX:60, clientY:20, button:0}));
+      carouselService.$$rAF.flush();
+      target[0].dispatchEvent(new MouseEvent("mousemove",{clientX:40, clientY:20, button:0}));
+      carouselService.$$rAF.flush();
+      target[0].dispatchEvent(new MouseEvent("mouseup",{clientX:40, clientY:20, button:0}));
+      carouselService.$$rAF.flush();
+      expect($rootScope.$carousel.suspended).toEqual(false);
+      expect(angular.element(element[0].querySelector('.active')).text()).toEqual("slide 3");
+
+    });
+    it("should init successfully and react to swipe right", function(){
+      var template = '<div carousel carousel-index="1" style="width:200px; height:200px;"><ul><li ng-class="{active:$carousel.index===0}">slide 1</li><li ng-class="{active:$carousel.index===1}">slide 2</li><li ng-class="{active:$carousel.index===2}">slide 3</li></ul></div>';
+      var element = $compile(template)($rootScope);
+      var target = angular.element($window);
+      $rootScope.$digest();
+
+      element[0].dispatchEvent(new MouseEvent("mousedown",{clientX:100, clientY:20, button:0}));
+      expect($rootScope.$carousel.suspended).toEqual(true);
+
+      target[0].dispatchEvent(new MouseEvent("mousemove",{clientX:120, clientY:20, button:0}));
+      carouselService.$$rAF.flush();
+      target[0].dispatchEvent(new MouseEvent("mousemove",{clientX:140, clientY:20, button:0}));
+      carouselService.$$rAF.flush();
+      target[0].dispatchEvent(new MouseEvent("mousemove",{clientX:160, clientY:20, button:0}));
+      carouselService.$$rAF.flush();
+      target[0].dispatchEvent(new MouseEvent("mouseup",{clientX:160, clientY:20, button:0}));
+      carouselService.$$rAF.flush();
+      expect($rootScope.$carousel.suspended).toEqual(false);
+
+      expect(angular.element(element[0].querySelector('.active')).text()).toEqual("slide 1");
+    });
+    
   });
 });

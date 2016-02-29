@@ -112,7 +112,10 @@
 
   var defaultOptions = {
       carousel: '$carousel',
+      carouselInterval: 3000,
       carouselWrapAround: false,
+      carouselSwipeGesture: true,
+      carouselSwipeThreshold: 30,
       carouselIndex: 0
   };
 
@@ -199,34 +202,93 @@
       return {pre: link};
 
       function link($scope, element, attr, ctrl){
-        element.addClass(CONTAINER_CLASS);
+        var deferredUpdate = carouselService.invokeOncePerFrame(updateUI);
+        var initialEvent;
+        var startTime;
+        var eventTarget = angular.element($window);
+        var selectionTarget = $document.find('body');
+        var elementWidth;
         ctrl.options = carouselService.normalizeOptions(attr, defaultOptions);
         ctrl.disableTransition = disableTransition;
-        ctrl.$index = parseInt(ctrl.options.carouselIndex) || 0;
+        ctrl.suspended = false;
+        ctrl.$index = ctrl.options.carouselIndex * 1;
+        ctrl.$offset = 0;
+        ctrl.options.carouselSwipeThreshold *= 1;
         if(typeof ctrl.options.carouselWrapAround ==='string'){
           ctrl.options.carouselWrapAround = ctrl.options.carouselWrapAround!=='false';
         }
-        // disable transition effect if initial
-        if(ctrl.$index > 0){
-          disableTransition();
-        }
-        // if carousel is dynamic, e.g. has ng-repeat, watch it
-        if (model) {
-          $scope.$watch(model+'.length', function(){
-            ctrl.init($scope.$eval(model));
-          });
-        } else {
-          ctrl.init(li);
+        if(typeof ctrl.options.carouselSwipeGesture ==='string'){
+          ctrl.options.carouselSwipeGesture = ctrl.options.carouselSwipeGesture!=='false';
         }
 
-        // expose controller
-        $scope.$eval(ctrl.options.carousel+'=value', {value:ctrl});
+        init();
 
-        // update offset on next frame after value is changed
-        $scope.$watch(ctrl.options.carousel+'.$index', carouselService.invokeOncePerFrame(update));
+        function init() {
+          element.addClass(CONTAINER_CLASS);
+          if(ctrl.options.carouselSwipeGesture) {
+            element.on(EVENTS.start, pointerDown);
+          }
+          // disable transition effect if initial
+          if(ctrl.$index > 0){
+            disableTransition();
+          }
+          // if carousel is dynamic, e.g. has ng-repeat, watch it
+          if (model) {
+            $scope.$watch(model+'.length', function(){
+              ctrl.init($scope.$eval(model));
+            });
+          } else {
+            ctrl.init(li);
+          }
 
-        function update() {
-          targetElement[0].style.transform='translateX(-'+(ctrl.index*100)+'%)';
+          // expose controller
+          $scope.$eval(ctrl.options.carousel+'=value', {value:ctrl});
+
+          // update offset on next frame after value is changed
+          $scope.$watch(ctrl.options.carousel+'.$index', deferredUpdate);
+        }
+
+        function updateUI() {
+          targetElement[0].style.transform='translateX('+((-ctrl.$index*100)-ctrl.$offset)+'%)';
+        }
+
+        function pointerDown(ev) {
+          if((ev.which === 1 || ev.which === 0) && !ctrl.suspended) {
+              eventTarget.on(EVENTS.move, pointerMove);
+              eventTarget.on(EVENTS.end, pointerUp);
+              element.addClass(CONTAINER_ACTIVE_CLASS);
+              selectionTarget.addClass(NO_SELECT_CLASS);
+              initialEvent = carouselService.normalizeEvent(ev);
+              startTime = Date.now();
+              ctrl.suspended = true;
+              elementWidth = element[0].clientWidth;
+            }
+        }
+
+        function pointerMove(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          ev = carouselService.normalizeEvent(ev);
+          ctrl.$offset = (initialEvent.clientX - ev.clientX)*100/elementWidth;
+          deferredUpdate();
+        }
+
+        function pointerUp(ev) {
+          if(Math.abs(ctrl.$offset) > ctrl.options.carouselSwipeThreshold) {
+            if(ctrl.$offset>0){
+              ctrl.next();
+            }else{
+              ctrl.previous();
+            }
+            $scope.$apply();
+          }
+          ctrl.$offset = 0;
+          deferredUpdate();
+          ctrl.suspended = false; // to ensure that active class will not be added on next frame
+          eventTarget.off(EVENTS.move, pointerMove);
+          eventTarget.off(EVENTS.end, pointerUp);
+          element.removeClass(CONTAINER_ACTIVE_CLASS);
+          selectionTarget.removeClass(NO_SELECT_CLASS);
         }
 
         function disableTransition(){
