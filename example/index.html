@@ -32,7 +32,7 @@
     <button ng-click="$carousel.next($event)">next</button>
     <button ng-click="$carousel.previous($event)">previous</button>
     <button ng-click="$carousel.index=1">go to 2</button>
-    <div class="container blurred" carousel="secondaryCarousel" carousel-index="2">
+    <div class="container grayscale" carousel="secondaryCarousel" carousel-index="2">
       <ul>
         <li ng-class="{active:secondaryCarousel.index===$index}" ng-repeat="item in items"><img ng-src="{{item.image}}" title="{{item.title}}"/></li>
       </ul>

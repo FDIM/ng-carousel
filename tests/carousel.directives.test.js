@@ -10,13 +10,15 @@ describe('carousel', function () {
   var $compile,
     $rootScope,
     $window,
+    $timeout,
     carouselService;
 
-  beforeEach(inject(function (_$compile_, _$rootScope_, _$window_, _ngCarouselService_) {
+  beforeEach(inject(function (_$compile_, _$rootScope_, _$window_, _$timeout_, _ngCarouselService_) {
     // The injector unwraps the underscores (_) from around the parameter names when matching
     $compile = _$compile_;
     $rootScope = _$rootScope_;
     $window = _$window_;
+    $timeout = _$timeout_;
     carouselService = _ngCarouselService_;
   }));
 
@@ -280,5 +282,38 @@ describe('carousel', function () {
       expect(angular.element(element[0].querySelector('.active')).text()).toEqual("slide 1");
     });
     
+    it("should init successfully and update every 3000ms", function(){
+      var template = '<div carousel style="width:200px; height:200px;"><ul><li ng-class="{active:$carousel.index===0}">slide 1</li><li ng-class="{active:$carousel.index===1}">slide 2</li><li ng-class="{active:$carousel.index===2}">slide 3</li></ul></div>';
+      var element = $compile(template)($rootScope);
+      var target = angular.element($window);
+      $rootScope.$digest();
+      
+      $timeout.flush(5000);
+      
+      expect(angular.element(element[0].querySelector('.active')).text()).toEqual("slide 2");
+          
+    });
+    
+    it("should init successfully, update every 3000ms and react to focus/blur events", function(){
+      var template = '<div carousel style="width:200px; height:200px;"><ul><li ng-class="{active:$carousel.index===0}">slide 1</li><li ng-class="{active:$carousel.index===1}">slide 2</li><li ng-class="{active:$carousel.index===2}">slide 3</li></ul></div>';
+      var element = $compile(template)($rootScope);
+      var target = angular.element($window);
+      $rootScope.$digest();
+      
+      $timeout.flush(5000);
+      
+      expect(angular.element(element[0].querySelector('.active')).text()).toEqual("slide 2");
+      
+      angular.element($window).triggerHandler('blur');
+      
+      $timeout.verifyNoPendingTasks();
+      
+      angular.element($window).triggerHandler('focus');
+      
+      $timeout.flush(5000);
+      
+      expect(angular.element(element[0].querySelector('.active')).text()).toEqual("slide 3");
+      
+    });
   });
 });

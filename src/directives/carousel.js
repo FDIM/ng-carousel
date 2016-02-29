@@ -24,21 +24,25 @@
       carouselIndex: 0
   };
 
-  module.controller('ngCarouselController',['$scope','ngCarouselService', CarouselController]);
+  module.controller('ngCarouselController',['$scope','$timeout','ngCarouselService', CarouselController]);
   module.directive('carousel', ['ngCarouselService', '$window', '$document', CarouselDirective]);
 
-  function CarouselController($scope, carouselService){
+  function CarouselController($scope, $timeout, carouselService){
     var model = this;
+    var lastTimeout;
+    model.suspended = false;
     model.$index = 0;
-
     model.init = init;
     model.next = next;
+    model.resetTimeout = resetTimeout;
     model.previous = previous;
+    
     // expose index property
     Object.defineProperty(model, 'index',{
       set: function(value){
         model.$index = value;
         ensureValidIndexRange();
+        resetTimeout();
       }, get: function(){
         return model.$index;
       }
@@ -67,16 +71,29 @@
         });
       }
       ensureValidIndexRange();
+      resetTimeout();
     }
-
+    
+    function resetTimeout(){
+      if(lastTimeout){
+        $timeout.cancel(lastTimeout);
+      }
+      // schedule flip only if interval is set and user did not start dragging
+      if(model.options.carouselInterval>0 && !model.suspended){
+        lastTimeout = $timeout(next, model.options.carouselInterval);
+      }
+    }
+    
     function next(ev){
       model.$index++;
       ensureValidIndexRange();
+      resetTimeout();
     }
 
     function previous(ev){
       model.$index--;
       ensureValidIndexRange();
+      resetTimeout();
     }
 
     function ensureValidIndexRange() {
@@ -130,9 +147,12 @@
 
         function init() {
           element.addClass(CONTAINER_CLASS);
-          if(ctrl.options.carouselSwipeGesture) {
+          if (ctrl.options.carouselSwipeGesture) {
             element.on(EVENTS.start, pointerDown);
           }
+          // disable/enable timeout
+          eventTarget.on('focus', focusGained);
+          eventTarget.on('blur', focusLost);
           // disable transition effect if initial
           if(ctrl.$index > 0){
             disableTransition();
@@ -152,7 +172,7 @@
           // update offset on next frame after value is changed
           $scope.$watch(ctrl.options.carousel+'.$index', deferredUpdate);
         }
-
+                
         function updateUI() {
           targetElement[0].style.transform='translateX('+((-ctrl.$index*100)-ctrl.$offset)+'%)';
         }
@@ -167,6 +187,7 @@
               startTime = Date.now();
               ctrl.suspended = true;
               elementWidth = element[0].clientWidth;
+              ctrl.resetTimeout();
             }
         }
 
@@ -194,6 +215,8 @@
           eventTarget.off(EVENTS.end, pointerUp);
           element.removeClass(CONTAINER_ACTIVE_CLASS);
           selectionTarget.removeClass(NO_SELECT_CLASS);
+          
+          ctrl.resetTimeout();
         }
 
         function disableTransition(){
@@ -205,6 +228,16 @@
                 element.removeClass(CONTAINER_ACTIVE_CLASS);
               });
           });
+        }
+        // used restore automatic slide when user focuses on other tab / window
+        function focusGained(){
+          ctrl.suspended = false;
+          ctrl.resetTimeout();
+        }
+        // used disable timeout when user focuses on other tab / window
+        function focusLost(){
+          ctrl.suspended = true;
+          ctrl.resetTimeout();
         }
       }
     }

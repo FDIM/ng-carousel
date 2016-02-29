@@ -13,17 +13,20 @@
   height: auto;
 }
 .container >ul{
-  transition-duration: 1s;
+  transition-duration: 0.5s;
 }
-.container.blurred li{
-  -webkit-filter:blur(5px);
+.container.grayscale li{
+  -webkit-filter:grayscale();
   transition: all ease 0.5s;
 }
-.container.blurred li.active{
-  -webkit-filter:blur(0px);
+.container.grayscale li.active{
+  -webkit-filter:none;
 }
-.container.blurred .ng-carousel-indicators{
+.container.grayscale .ng-carousel-indicators{
   text-align: right;
+}
+.container.grayscale .ng-carousel-indicators a{
+  border-radius: 100%;
 }
 header .help{
   display: none;
