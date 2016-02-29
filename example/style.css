@@ -4,7 +4,20 @@
   width:500px;
   margin-bottom: 5px;
 }
-
+.container img{
+  width: 100%;
+  height: auto;
+}
+.container >ul{
+  transition-duration: 1s;
+}
+.container.blurred li{
+  -webkit-filter:blur(5px);
+  transition: all ease 0.5s;
+}
+.container.blurred li.active{
+  -webkit-filter:blur(0px);
+}
 header .help{
   display: none;
 }

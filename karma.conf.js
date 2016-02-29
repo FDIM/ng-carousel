@@ -15,6 +15,7 @@ var _karma = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
+      './node_modules/phantomjs-polyfill/bind-polyfill.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'src/**/*.js',

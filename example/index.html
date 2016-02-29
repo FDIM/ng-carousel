@@ -13,32 +13,36 @@
 <body>
   <header>
     <h2>Example <span class="help" onclick="alert('Swipe/pull left or right to change the slides')">help</span></h2>
-    <p>Swipe/pull left or right to change the slides</p>
+    <p>Swipe/pull left or right to explore random <a rel="noreferrer" target="_blank" href="http://lorempixel.com/">lorempixel</a> images</p>
   </header>
   <div ng-controller="AppController">
     <div class="container" carousel carousel-wrap-around="true">
       <ul>
-        <li>slide 1</li>
-        <li>slide 2</li>
-        <li>slide 3</li>
+        <!-- comment after li prvents whitespace gap -->
+        <li><img src="http://lorempixel.com/500/281/?s=1"/></li><!--
+        --><li>
+          <h2>Slide #2</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mattis lorem non ornare mattis. Suspendisse potenti. Curabitur non turpis nec elit aliquam lacinia ac consequat lectus. Pellentesque laoreet libero nec neque mattis eleifend. Etiam ac sem nibh. Maecenas venenatis convallis bibendum. Cras blandit dui at placerat feugiat. In vehicula tellus. <p>
+        </li><!--
+        --><li><img src="http://lorempixel.com/500/281/?s=3"/></li>
       </ul>
     </div>
     <span>{{$carousel.index}}</span>
     <button ng-click="$carousel.next($event)">next</button>
     <button ng-click="$carousel.previous($event)">previous</button>
-    <div class="container" carousel="secondaryCarousel" carousel-index="2">
+    <div class="container blurred" carousel="secondaryCarousel" carousel-index="2">
       <ul>
-        <li ng-class="{active:secondaryCarousel.index===$index}" ng-repeat="item in items">{{item.title}}</li>
+        <li ng-class="{active:secondaryCarousel.index===$index}" ng-repeat="item in items"><img ng-src="{{item.image}}" title="{{item.title}}"/></li>
       </ul>
     </div>
     <span>{{secondaryCarousel.index}}</span>
     <button ng-click="secondaryCarousel.next($event)">next</button>
     <button ng-click="secondaryCarousel.previous($event)">previous</button>
-    
+
     <button ng-click="addNewAt(0)">add new item at the start</button>
     <button ng-click="addNewAt(items.length)">add new item at the end</button>
     <button ng-click="removeItem(items[items.length-1])">remove last item</button>
-    
+
   </div>
 </body>
 
