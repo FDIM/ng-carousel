@@ -175,5 +175,52 @@ describe('carousel', function () {
       expect(angular.element(element[0].querySelector('.ng-carousel ul li:first-child')).hasClass('active')).toBe(true);
       expect(angular.element(element[0].querySelector('.ng-carousel-indicators a:first-child')).hasClass('active')).toBe(true);
     });
+
+    it("should init successfully and slide 2 should be visible, even if new slide is added in the end", function(){
+      var template = '<div carousel carousel-index="1"><ul><li ng-class="{active:$carousel.index===$index}" ng-repeat="s in slides">{{s}}</li></ul><span carousel-indicators></span></div>';
+      $rootScope.slides = slides.slice();
+
+      var element = $compile(template)($rootScope);
+      $rootScope.$digest();
+
+      expect(angular.element(element[0].querySelector('.ng-carousel ul li:nth-child(2)')).hasClass('active')).toBe(true);
+      expect(angular.element(element[0].querySelector('.ng-carousel-indicators a:nth-child(2)')).hasClass('active')).toBe(true);
+
+      $rootScope.slides.push("slide 3");
+      $rootScope.$digest();
+      expect(angular.element(element[0].querySelector('.ng-carousel ul li:nth-child(2)')).hasClass('active')).toBe(true);
+      expect(angular.element(element[0].querySelector('.ng-carousel-indicators a:nth-child(2)')).hasClass('active')).toBe(true);
+    });
+
+    it("should init successfully and slide 2 should be visible, even if new slide is added in the beggining", function(){
+      var template = '<div carousel carousel-index="1"><ul><li ng-class="{active:$carousel.index===$index}" ng-repeat="s in slides">{{s}}</li></ul><span carousel-indicators></span></div>';
+      $rootScope.slides = slides.slice();
+
+      var element = $compile(template)($rootScope);
+      $rootScope.$digest();
+
+      expect(angular.element(element[0].querySelector('.ng-carousel ul li:nth-child(2)')).hasClass('active')).toBe(true);
+      expect(angular.element(element[0].querySelector('.ng-carousel-indicators a:nth-child(2)')).hasClass('active')).toBe(true);
+
+      $rootScope.slides.unshift("slide 3");
+      $rootScope.$digest();
+      expect(angular.element(element[0].querySelector('.ng-carousel ul li:nth-child(3)')).hasClass('active')).toBe(true);
+      expect(angular.element(element[0].querySelector('.ng-carousel-indicators a:nth-child(3)')).hasClass('active')).toBe(true);
+    });
+    it("should init successfully and slide 1 should become visible once slide 2 is removed", function(){
+      var template = '<div carousel carousel-index="1"><ul><li ng-class="{active:$carousel.index===$index}" ng-repeat="s in slides">{{s}}</li></ul><span carousel-indicators></span></div>';
+      $rootScope.slides = slides.slice();
+
+      var element = $compile(template)($rootScope);
+      $rootScope.$digest();
+
+      expect(angular.element(element[0].querySelector('.ng-carousel ul li:nth-child(2)')).hasClass('active')).toBe(true);
+      expect(angular.element(element[0].querySelector('.ng-carousel-indicators a:nth-child(2)')).hasClass('active')).toBe(true);
+
+      $rootScope.slides.pop()
+      $rootScope.$digest();
+      expect(angular.element(element[0].querySelector('.ng-carousel ul li:nth-child(1)')).hasClass('active')).toBe(true);
+      expect(angular.element(element[0].querySelector('.ng-carousel-indicators a:nth-child(1)')).hasClass('active')).toBe(true);
+    });
   });
 });

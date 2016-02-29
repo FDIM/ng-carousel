@@ -137,8 +137,27 @@
     });
 
     function init(items){
-      //TODO: find difference and update index accordingly
-      model.items = items;
+      // if list of items is modified, find currently visible item and adjust the index (no animation)
+      if (model.items && model.items.length && items && items.length) {
+        var item = model.items[model.$index];
+        var newIndex = -1;
+        for(var i = 0; i< items.length ; i++){
+          if (items[i] === item) {
+            newIndex = i;
+            break;
+          }
+        }
+        model.disableTransition();
+        if (newIndex!==-1){
+          model.$index = newIndex;
+        }
+      }
+      model.items = []; // make a copy
+      if(items){
+        angular.forEach(items, function(i) {
+          model.items.push(i);
+        });
+      }
       ensureValidIndexRange();
     }
 
@@ -153,14 +172,12 @@
     }
 
     function ensureValidIndexRange() {
-      if (model.items) {
-        if (model.$index >= model.items.length) {
-          model.$index = model.options.carouselWrapAround ? 0 : model.items.length - 1;
-        }
+      if (model.$index >= model.items.length) {
+        model.$index = model.options.carouselWrapAround ? 0 : model.items.length - 1;
       }
 
       if (model.$index < 0) {
-        model.$index = model.options.carouselWrapAround && model.items ? model.items.length - 1 : 0;
+        model.$index = model.options.carouselWrapAround ? model.items.length - 1 : 0;
       }
     }
   }
@@ -184,13 +201,14 @@
       function link($scope, element, attr, ctrl){
         element.addClass(CONTAINER_CLASS);
         ctrl.options = carouselService.normalizeOptions(attr, defaultOptions);
+        ctrl.disableTransition = disableTransition;
         ctrl.$index = parseInt(ctrl.options.carouselIndex) || 0;
         if(typeof ctrl.options.carouselWrapAround ==='string'){
           ctrl.options.carouselWrapAround = ctrl.options.carouselWrapAround!=='false';
         }
         // disable transition effect if initial
         if(ctrl.$index > 0){
-          disableInitialTransition();
+          disableTransition();
         }
         // if carousel is dynamic, e.g. has ng-repeat, watch it
         if (model) {
@@ -211,7 +229,7 @@
           targetElement[0].style.transform='translateX(-'+(ctrl.index*100)+'%)';
         }
 
-        function disableInitialTransition(){
+        function disableTransition(){
           // active class disables transition in stylesheet
           carouselService.$$rAF(function(){
               element.addClass(CONTAINER_ACTIVE_CLASS);

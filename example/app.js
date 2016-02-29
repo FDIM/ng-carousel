@@ -32,30 +32,11 @@
         $scope.addNewAt(i);
       }
 
-      $scope.loadMoreItems = function(cancel) {
-        $scope.history.push("loading more items");
-        $scope.loadingMore = true;
-        $timeout(function() {
-          cancel();
-          $scope.history.push("loaded more items");
-          $scope.loadingMore = false;
-          var max = $scope.items.length+10;
-          for(var i =$scope.items.length; i< max; i++){
-            $scope.items.push({title:"item "+i, intro:'intro '+i});
-          }
-        }, 2000);
-        return false;
-      }
-
       $scope.removeItem = function(item) {
         $scope.items.splice($scope.items.indexOf(item),1);
         $scope.history.push("removed "+item.title);
       }
 
-      $scope.archiveItem = function(item) {
-        $scope.items.splice($scope.items.indexOf(item),1);
-        $scope.history.push("archived "+item.title);
-      }
   }]);
 
   // The name of the module, followed by its dependencies (at the bottom to facilitate enclosure)
