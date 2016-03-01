@@ -20,7 +20,8 @@
       carouselInterval: 3000,
       carouselWrapAround: false,
       carouselSwipeGesture: true,
-      carouselSwipeThreshold: 30,
+      carouselSwipeGestureThreshold: 30,
+      carouselSwipeGestureTimeout: 1000,
       carouselIndex: 0
   };
 
@@ -36,7 +37,7 @@
     model.next = next;
     model.resetTimeout = resetTimeout;
     model.previous = previous;
-    
+
     // expose index property
     Object.defineProperty(model, 'index',{
       set: function(value){
@@ -73,7 +74,7 @@
       ensureValidIndexRange();
       resetTimeout();
     }
-    
+
     function resetTimeout(){
       if(lastTimeout){
         $timeout.cancel(lastTimeout);
@@ -83,7 +84,7 @@
         lastTimeout = $timeout(next, model.options.carouselInterval);
       }
     }
-    
+
     function next(ev){
       model.$index++;
       ensureValidIndexRange();
@@ -129,13 +130,15 @@
         var startTime;
         var eventTarget = angular.element($window);
         var selectionTarget = $document.find('body');
+        var wasMoreThanThreshold;
         var elementWidth;
         ctrl.options = carouselService.normalizeOptions(attr, defaultOptions);
         ctrl.disableTransition = disableTransition;
         ctrl.suspended = false;
         ctrl.$index = ctrl.options.carouselIndex * 1;
         ctrl.$offset = 0;
-        ctrl.options.carouselSwipeThreshold *= 1;
+        ctrl.options.carouselSwipeGestureThreshold *= 1;
+        ctrl.options.carouselSwipeGestureTimeout *= 1;
         if(typeof ctrl.options.carouselWrapAround ==='string'){
           ctrl.options.carouselWrapAround = ctrl.options.carouselWrapAround!=='false';
         }
@@ -172,7 +175,7 @@
           // update offset on next frame after value is changed
           $scope.$watch(ctrl.options.carousel+'.$index', deferredUpdate);
         }
-                
+
         function updateUI() {
           targetElement[0].style.transform='translateX('+((-ctrl.$index*100)-ctrl.$offset)+'%)';
         }
@@ -186,7 +189,8 @@
               initialEvent = carouselService.normalizeEvent(ev);
               startTime = Date.now();
               ctrl.suspended = true;
-              elementWidth = element[0].clientWidth;
+              wasMoreThanThreshold = false;
+              elementWidth = element[0].clientWidth || 100;
               ctrl.resetTimeout();
             }
         }
@@ -195,12 +199,20 @@
           ev.preventDefault();
           ev.stopPropagation();
           ev = carouselService.normalizeEvent(ev);
-          ctrl.$offset = (initialEvent.clientX - ev.clientX)*100/elementWidth;
+          ctrl.$offset = (initialEvent.clientX - ev.clientX) * 100 / elementWidth;
+          // cancel gesture if user doesnt reach treshold value within given time
+          if (!wasMoreThanThreshold && ctrl.options.carouselSwipeGestureTimeout !== 0 && Math.abs(ctrl.$offset) < ctrl.options.carouselSwipeGestureThreshold && Date.now() - startTime > ctrl.options.carouselSwipeGestureTimeout) {
+            ctrl.$offset = 0;
+            cleanupAfterPointerDown();
+          }
+          if (Math.abs(ctrl.$offset) >= ctrl.options.carouselSwipeGestureThreshold) {
+            wasMoreThanThreshold = true;
+          }
           deferredUpdate();
         }
 
         function pointerUp(ev) {
-          if(Math.abs(ctrl.$offset) > ctrl.options.carouselSwipeThreshold) {
+          if(Math.abs(ctrl.$offset) > ctrl.options.carouselSwipeGestureThreshold) {
             if(ctrl.$offset>0){
               ctrl.next();
             }else{
@@ -210,13 +222,17 @@
           }
           ctrl.$offset = 0;
           deferredUpdate();
+          eventTarget.off(EVENTS.end, pointerUp);
+          cleanupAfterPointerDown();
+
+          ctrl.resetTimeout();
+        }
+
+        function cleanupAfterPointerDown() {
           ctrl.suspended = false; // to ensure that active class will not be added on next frame
           eventTarget.off(EVENTS.move, pointerMove);
-          eventTarget.off(EVENTS.end, pointerUp);
           element.removeClass(CONTAINER_ACTIVE_CLASS);
           selectionTarget.removeClass(NO_SELECT_CLASS);
-          
-          ctrl.resetTimeout();
         }
 
         function disableTransition(){
