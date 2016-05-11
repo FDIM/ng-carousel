@@ -8,14 +8,24 @@
                                   not supported by any browser */
 }
 .ng-carousel {
-  overflow: hidden;
   transform: translateZ(0);
   position: relative;
 }
-.ng-carousel.ng-carousel-active >ul {
+.ng-carousel.ng-carousel-no-inner-wrapper{
+  overflow: hidden;
+}
+.ng-carousel >div.carousel-inner-wrapper{
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.ng-carousel.ng-carousel-active >ul, .ng-carousel.ng-carousel-active >div.carousel-inner-wrapper >ul  {
   transition: none;
 }
-.ng-carousel >ul {
+.ng-carousel >ul, .ng-carousel >div.carousel-inner-wrapper >ul  {
   position: absolute;
   top: 0;
   left: 0;
@@ -30,7 +40,7 @@
   transition: transform ease 0.3s;
 }
 
-.ng-carousel >ul >li {
+.ng-carousel >ul >li, .ng-carousel >div.carousel-inner-wrapper>ul >li {
   display: inline-block;
   width: 100%;
   height: 100%;

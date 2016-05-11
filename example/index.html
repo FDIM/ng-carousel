@@ -45,7 +45,18 @@
     <button ng-click="addNewAt(0)">add new item at the start</button>
     <button ng-click="addNewAt(items.length)">add new item at the end</button>
     <button ng-click="removeItem(items[items.length-1])">remove last item</button>
-
+    <p>Outer indicators</p>
+    <div class="container outer-indicators" carousel carousel-wrap-around="true">
+      <div class="carousel-inner-wrapper">
+        <ul>
+          <!-- comment after li prvents whitespace gap -->
+          <li><img src="http://lorempixel.com/500/281/?s=5"/></li><!--
+          --><li><img src="http://lorempixel.com/500/281/?s=44"/></li><!--
+          --><li><img src="http://lorempixel.com/500/281/?s=43"/></li>
+        </ul>
+      </div>
+      <span carousel-indicators></span>
+    </div>
   </div>
 </body>
 

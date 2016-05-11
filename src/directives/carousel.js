@@ -13,6 +13,7 @@
   };
   var NO_SELECT_CLASS = 'no-select';
   var CONTAINER_CLASS = 'ng-carousel';
+  var CONTAINER_NO_INNER_WRAPPER_CLASS = 'ng-carousel-no-inner-wrapper';
   var CONTAINER_ACTIVE_CLASS = 'ng-carousel-active';
 
   var defaultOptions = {
@@ -122,6 +123,7 @@
         var parts = li.attr('ng-repeat').split(' ');
         model = parts[2]; // item in items  -> should take `items`
       }
+      var hasInnerWrapper = element[0].querySelectorAll('.carousel-inner-wrapper').length > 0;
       return {pre: link};
 
       function link($scope, element, attr, ctrl){
@@ -150,6 +152,9 @@
 
         function init() {
           element.addClass(CONTAINER_CLASS);
+          if(!hasInnerWrapper){
+            element.addClass(CONTAINER_NO_INNER_WRAPPER_CLASS);
+          }
           if (ctrl.options.carouselSwipeGesture) {
             element.on(EVENTS.start, pointerDown);
           }

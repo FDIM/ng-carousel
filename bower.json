@@ -1,7 +1,7 @@
 {
   "name": "ng-carousel",
   "main": "dist/ng-carousel.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/FDIM/ng-carousel.git",
   "authors": [
     "FDIM <domas.trijonis@gmail.com>"

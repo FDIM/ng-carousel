@@ -28,6 +28,12 @@
 .container.grayscale .ng-carousel-indicators a{
   border-radius: 100%;
 }
+.container.outer-indicators .ng-carousel-indicators{
+  bottom: auto;
+  top: -34px;
+  right: 0;
+  left: auto;
+}
 header .help{
   display: none;
 }
