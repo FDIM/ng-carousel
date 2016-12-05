@@ -7,7 +7,7 @@ A set of directives allowing you to easily implement touch friendly carousel.
 Live Demo: http://fdim.github.io/ng-carousel/example/
 
 ## installation
-As simple as "bower install fdim-ng-carousel" 
+As simple as "bower install ng-carousel-2" 
 
 ## usage
 todo
